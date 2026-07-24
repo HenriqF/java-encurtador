@@ -1,0 +1,16 @@
+
+GET http://localhost:3000/
+
+
+###
+
+POST http://localhost:3000/novo
+Content-Type: application/json
+
+{
+    "url": "https://www.youtube.com/watch?v=xwcUBYJzTkk&t=568s"
+}
+
+###
+
+GET http://localhost:3000/fds/HASH

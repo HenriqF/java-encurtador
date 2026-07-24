@@ -1,0 +1,9 @@
+[build]
+    run: mvn clean package
+    run: cd target && java -jar .\demo-1.0.0.jar
+    run: mvn clean
+    end
+
+[main]
+    goto: build
+    end

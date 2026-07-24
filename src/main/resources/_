@@ -1,0 +1,20 @@
+novo encurtar:
+    pegar tamanho
+    index -> colocar na tabela devida
+    pegar hash
+    colocar na tabela "hashing" com tamanho e index
+
+
+deletar encurtar:
+    index, hash, tamanho, posicao -> procurar por hash na tabela "hashing"
+
+    se index existir:
+        deletar entrada "posicao" na tabela "tamanho"
+        deletar entrada "index" na tabela hashing
+
+usar encurtar:
+    index, hash, tamanho, posicao -> procurar por hash na tabela "hashing"
+    se index existir:
+        redirecionar para o valor da entrada "posicao" na tabela "tamanho"
+
+    endpoint: /hash

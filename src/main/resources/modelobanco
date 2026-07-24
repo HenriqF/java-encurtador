@@ -1,0 +1,16 @@
+[curto]
+    50 letras -> url
+
+[medio]
+    100 letras -> url
+
+[longo]
+    200 letras -> url
+
+[ultra]
+    500 letras -> url
+
+[hashing]
+    100 letras -> hash
+    numero -> tamanho
+    numero -> posicao
