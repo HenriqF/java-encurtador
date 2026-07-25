@@ -104,7 +104,12 @@ public class Banco {
 
         try{
             String res = send(comando);
-            return representar(res, recorde);
+
+            if (res.equals("tabela vazia")) return null;
+            
+            List<Generic> r = representar(res, recorde);
+            if (r.size() == 0) return null;
+            return r;
         }
         catch (IOException ex){
             ex.printStackTrace();

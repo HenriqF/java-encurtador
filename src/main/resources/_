@@ -1,6 +1,7 @@
 novo encurtar:
     pegar tamanho
-    index -> colocar na tabela devida
+    index -> ver se existe na tabela, se nao, colocar
+    
     pegar hash
     colocar na tabela "hashing" com tamanho e index
 
