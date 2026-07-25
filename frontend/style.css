@@ -1,0 +1,9 @@
+textarea{
+    resize: none;
+    width: 40%;
+}
+
+button{
+    box-sizing: border-box;
+    line-height: 1.5;
+}

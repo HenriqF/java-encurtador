@@ -1,6 +1,5 @@
 
-GET http://localhost:3000/scy2lru7gj
-
+GET http://localhost:3000/
 
 ###
 
@@ -8,10 +7,11 @@ POST http://localhost:3000/novo
 Content-Type: application/json
 
 {
-    "url": "https://youtube.com"
+    "url": "https://abc.xyz"
 }
 
 ###
+GET http://localhost:3000/fds/j4pop_xmkr
 
-
-GET http://localhost:3000/fds/scy2lru7gj
+###
+GET http://localhost:3000/lista

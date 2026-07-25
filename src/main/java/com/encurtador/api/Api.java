@@ -42,6 +42,9 @@ public class Api {
             HttpServer rest = HttpServer.create(new InetSocketAddress(this.host, this.port), 0);
 
             rest.createContext("/", c -> {
+                c.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+                c.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+                c.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
 
                 String[] pargs = get_pargs(c);
                 if (pargs.length != 2){
@@ -66,12 +69,15 @@ public class Api {
                 String res = busca_link.get(0).url();
   
                 c.getResponseHeaders().set("Location", res);
-                c.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
                 c.sendResponseHeaders(301, 0);
                 c.close();
             });
 
             rest.createContext("/novo", c -> {
+                c.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+                c.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+                c.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+
                 InputStream is = c.getRequestBody();
                 String corpo = new String(is.readAllBytes(), StandardCharsets.UTF_8);
 
@@ -103,7 +109,7 @@ public class Api {
                         resposta = url_hash;
                     }
                     else{
-                        resposta = "já existe";
+                        resposta = "ja existe";
                     }
 
                 }
@@ -111,7 +117,6 @@ public class Api {
                     resposta = "json precisa de chave 'url'";
                 }
                 
-                c.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
                 c.sendResponseHeaders(200, resposta.length());
                 try (OutputStream os = c.getResponseBody()) {
                     os.write(resposta.getBytes());
@@ -119,6 +124,10 @@ public class Api {
             });
 
             rest.createContext("/fds", c -> {
+                c.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+                c.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+                c.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+
                 String[] pargs = get_pargs(c);
 
                 if (pargs.length != 3){
@@ -149,7 +158,29 @@ public class Api {
 
                 String res = "removido";
 
+                c.sendResponseHeaders(200, res.length());
+                try (OutputStream os = c.getResponseBody()) {
+                    os.write(res.getBytes());
+                }
+            });
+
+            rest.createContext("/lista", c -> {
                 c.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+                c.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+                c.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+
+                List<Hashing> busca = bd.get("hashing", "", Hashing.class);
+
+                if (busca == null){
+                    c.sendResponseHeaders(404, 0);
+                    c.close();
+                }
+
+                String res = "";
+                for (Hashing h : busca){
+                    res += h.hash() + "\n";
+                }
+
                 c.sendResponseHeaders(200, res.length());
                 try (OutputStream os = c.getResponseBody()) {
                     os.write(res.getBytes());
