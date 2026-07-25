@@ -1,5 +1,5 @@
 
-GET http://localhost:3000/
+GET http://localhost:3000/scy2lru7gj
 
 
 ###
@@ -8,15 +8,10 @@ POST http://localhost:3000/novo
 Content-Type: application/json
 
 {
-    "url": "https://www.youtube.com/watch?v=xwcUBYJzTkk&t=568sd"
+    "url": "https://youtube.com"
 }
 
 ###
 
-GET http://localhost:3000/fds/HASH
 
-
-
-###
-
-GET http://localhost:3000/hash/afd
+GET http://localhost:3000/fds/scy2lru7gj

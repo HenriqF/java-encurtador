@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.encurtador.dados.Banco;
+import com.encurtador.dados.tabelas.Hashing;
 import com.encurtador.dados.tabelas.Link;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -41,8 +42,29 @@ public class Api {
             HttpServer rest = HttpServer.create(new InetSocketAddress(this.host, this.port), 0);
 
             rest.createContext("/", c -> {
-                String res = "https://osu.ppy.sh/";
 
+                String[] pargs = get_pargs(c);
+                if (pargs.length != 2){
+                    c.sendResponseHeaders(404, 0);
+                    c.close();
+                }
+                String hash = pargs[1];
+
+                List<Hashing> busca = bd.get("hashing", "hash == '" + hash +"'", Hashing.class);
+                if (busca == null){
+                    c.sendResponseHeaders(404, 0);
+                    c.close();
+                }
+                String tabela = busca.get(0).tamanho();
+                String index_tabela = String.valueOf(busca.get(0).posicao());
+
+                List<Link> busca_link = bd.get(tabela, "index == " + index_tabela, Link.class);
+                if (busca_link == null){
+                    c.sendResponseHeaders(404, 0);
+                    c.close();
+                }
+                String res = busca_link.get(0).url();
+  
                 c.getResponseHeaders().set("Location", res);
                 c.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
                 c.sendResponseHeaders(301, 0);
@@ -60,21 +82,28 @@ public class Api {
                     String url = j.getString("url");
                     String tamanho = get_tamanho_url(url);
                     String operacao = "url == '" + url + "'";
-                    String url_hash = this.hash.computar(url);
-                    System.out.println(url_hash);
-
 
                     List<Link> busca = bd.get(tamanho, operacao, Link.class);
 
-
                     if (busca == null){
                         String[] dados = {bd.hex_encode(url)};
-                        int index = bd.put(tamanho, dados);       
-                        System.out.println(index);
+                        int index = bd.put(tamanho, dados);     
 
+                        String url_hash;
+                        String salt = "";
+                        while (true){
+                            url_hash = this.hash.computar(url+salt);
+                            salt += "67";
+                            List<Hashing> b = bd.get("hashing", "hash == '" + url_hash +"'", Hashing.class);
+                            if (b == null) break;
+                        }
+                        String[] hashing = {bd.hex_encode(url_hash), bd.hex_encode(tamanho), bd.hex_encode(String.valueOf(index))};
+                        bd.put("hashing", hashing);
+
+                        resposta = url_hash;
                     }
                     else{
-                        System.out.println("já existe");
+                        resposta = "já existe";
                     }
 
                 }
@@ -89,29 +118,36 @@ public class Api {
                 }
             });
 
-            rest.createContext("/fds/", c -> {
+            rest.createContext("/fds", c -> {
                 String[] pargs = get_pargs(c);
-                System.err.println(pargs.length);
 
-                String res = "";
                 if (pargs.length != 3){
-                    res = "sem hash do URL";
-                }
-                else {
-                    res = pargs[2];
+                    c.sendResponseHeaders(404, 0);
+                    c.close();
                 }
 
-                c.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
-                c.sendResponseHeaders(200, res.length());
-                try (OutputStream os = c.getResponseBody()) {
-                    os.write(res.getBytes());
+                String hash = pargs[2];
+                List<Hashing> busca = bd.get("hashing", "hash == '" + hash +"'", Hashing.class);
+                if (busca == null){
+                    c.sendResponseHeaders(404, 0);
+                    c.close();
                 }
-            });
 
-            rest.createContext("/hash", c -> {
-                String[] pargs = get_pargs(c);
+                int index_self = busca.get(0).index();
+                String tabela = busca.get(0).tamanho();
+                int index_tabela = busca.get(0).posicao();
 
-                String res = this.hash.computar(pargs[2]);
+                System.out.println(index_self + " | " + tabela + " " + index_tabela);
+
+                int delh = bd.delete("hashing", index_self);
+                int delt = bd.delete(tabela, index_tabela);
+
+                if (delh < 0 || delt < 0){
+                    c.sendResponseHeaders(500, 0);
+                    c.close();
+                }
+
+                String res = "removido";
 
                 c.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
                 c.sendResponseHeaders(200, res.length());

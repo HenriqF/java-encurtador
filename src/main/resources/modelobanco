@@ -11,6 +11,6 @@
     500 letras -> url
 
 [hashing]
-    50 letras -> hash
+    12 letras -> hash
     5 letras -> tamanho
     numero -> posicao
